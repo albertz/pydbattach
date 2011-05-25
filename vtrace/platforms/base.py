@@ -557,7 +557,7 @@ class UtilMixin:
         elif self.exited:
             run = "exited"
         exe = self.getMeta("ExeName")
-        return "[%d]\t- %s <%s>" % (self.pid, exe, run)
+        return "<%s pid: %d, exe: %s, state: %s>" % (self.__class__.__name__, self.pid, exe, run)
 
     def initMode(self, name, value, descr):
         """
