@@ -219,12 +219,14 @@ class Trace(Notifier):
 		if self.isAttached():
 			self.detach()
 	
-		try:
+		if True:
+		#try:
 			self.platformAttach(pid)
 			self.justAttached(pid)
 			self.wait()
-		except Exception, msg:
-			raise PlatformException(str(msg))
+		# NOTE: no wrapping 'cause i want to get the real backtrace for the exception
+		#except Exception, msg:
+		#	raise PlatformException(str(msg))
 
 	def stepi(self):
 		"""
