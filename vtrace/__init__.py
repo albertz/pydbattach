@@ -1464,9 +1464,9 @@ def getTrace():
 			ilist.append(v_solaris.SolarisIntelMixin)
 
 	elif os_name == "Darwin":
-		print "DARWIN SUPPORT ISNT DONE"
-		if 9 not in os.getgroups():
-			raise Exception("You must be in the procmod group!")
+		#print "DARWIN SUPPORT ISNT DONE"
+		#if 9 not in os.getgroups():
+		#	raise Exception("You must be in the procmod group!")
 		import vtrace.platforms.darwin as v_darwin
 		import vtrace.platforms.posix as v_posix
 		ilist.append(v_posix.PosixMixin)
