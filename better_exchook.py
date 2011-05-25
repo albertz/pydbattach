@@ -70,7 +70,7 @@ def parse_py_statement(line):
 pykeywords = set([
 	"for","in","while","print","continue","break",
 	"if","else","elif","yield","return","def","class",
-	"raise","try","except","import","pass","lambda",
+	"raise","try","except","import","as","pass","lambda",
 	])
 
 def grep_full_py_identifiers(tokens):
