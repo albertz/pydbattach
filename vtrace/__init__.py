@@ -1473,7 +1473,7 @@ def getTrace():
 		ilist.append(v_posix.PtraceMixin)
 		ilist.append(v_darwin.DarwinMixin)
 		ilist.append(v_darwin.MachoMixin)
-		if arch == "i386":
+		if arch == "i386" or arch == "x86_64":
 			import vtrace.archs.intel as v_intel
 			ilist.append(v_intel.IntelMixin)
 			ilist.append(v_darwin.DarwinIntel32Registers)
