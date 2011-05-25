@@ -252,6 +252,11 @@ class PtraceMixin:
         self.threadWrap("platformWriteMemory", self.platformWriteMemory)
         self.threadWrap("platformExec", self.platformExec)
 
+    # copied from FreeBSDMixin
+    def platformAttach(self, pid):
+        if ptrace(PT_ATTACH, pid, 0, 0) != 0:
+            raise Exception("Ptrace Attach Failed")
+
     def platformExec(self, cmdline):
         self.execing = True
         cmdlist = v_util.splitargs(cmdline)
