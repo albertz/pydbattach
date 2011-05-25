@@ -238,6 +238,9 @@ class TracerMethodProxy:
             raise ret
         return ret
 
+    def __repr__(self):
+        return "<TracerMethodProxy of %s in %s>" % (self.proxymeth, self.thread)
+
 class TracerThread(Thread):
     """
     Ok... so here's the catch... most debug APIs do *not* allow
