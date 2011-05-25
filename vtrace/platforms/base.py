@@ -271,6 +271,9 @@ class TracerThread(Thread):
                     queue.put(e)
                     if vtrace.verbose:
                         traceback.print_exc()
+                    # this deadlocks ?!
+                    #if vtrace.exc_handler:
+                    #    vtrace.exc_handler(*sys.exc_info())
                     continue
             except:
                 if vtrace.verbose:

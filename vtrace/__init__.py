@@ -1532,3 +1532,5 @@ def interact(pid=0,server=None,trace=None):
 
 	code.interact(local=mylocals)
 
+# set this to some function (type, value, tb). like sys.excepthook
+exc_handler = None
