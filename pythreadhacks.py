@@ -16,10 +16,10 @@ def threadfunc(i):
 		for i in xrange(1000): pass
 		time.sleep(1)
 
-threads = map(lambda i: thread.start_new_thread(threadfunc, (i,)), range(4))
+threads = map(lambda i: thread.start_new_thread(threadfunc, (i,)), range(1))
 while True:
 	if all(t in sys._current_frames() for t in threads): break	
-print "threads:", sys._current_frames()
+print "threads:", threads
 
 mainthread = thread.get_ident()
 
@@ -37,8 +37,7 @@ def tracefunc(frame,ev,arg):
 		print "trace", ev, "from thread", thread
 	return tracefunc
 
-# force _Py_TracingPossible > 0
-sys.settrace(tracefunc)
+
 
 import pythonhdr
 from pythonhdr import PyObject, Py_ssize_t
@@ -46,6 +45,13 @@ CO_MAXBLOCKS = 20 # from Python/Include/code.h
 POINTER = ctypes.POINTER
 PPyObject = POINTER(PyObject)
 c_int, c_long = ctypes.c_int, ctypes.c_long
+
+def Py_INCREF(pyobj): pyobj.contents.ob_refcnt += 1
+def Py_DECREF(pyobj): pyobj.contents.ob_refcnt -= 1
+def Py_XINCREF(pyobj):
+	if pyobj: Py_INCREF(pyobj)
+def Py_XDECREF(pyobj):
+	if pyobj: Py_DECREF(pyobj)
 
 # see frameobject.h for PyTryBlock and PyFrameObject
 
@@ -112,32 +118,69 @@ PyThreadState._fields_ = [
 		("thread_id", c_long),
 	]
 
-def getTickCounter(frame):
+def getThreadState(frame):
 	frame = PyFrameObject.from_address(id(frame))
 	tstate = frame.f_tstate.contents
-	return tstate.tick_counter
+	return tstate
 
-def setTraceOfThread(t):
+def getTickCounter(frame):
+	return getThreadState(frame).tick_counter
+
 	
-	#PyObject *temp = tstate->c_traceobj;
-	#tstate->c_tracefunc = NULL;
-	#tstate->c_traceobj = NULL;
-	#/* Must make sure that profiling is not ignored if 'temp' is freed */
-	#tstate->use_tracing = tstate->c_profilefunc != NULL;
-	#Py_XDECREF(temp);
-	#tstate->c_tracefunc = func;
-	#tstate->c_traceobj = arg;
-	#/* Flag that tracing or profiling is turned on */
-	#tstate->use_tracing = ((func != NULL) || (tstate->c_profilefunc != NULL));
+def setTraceOfThread(tstate):
+	func = c_tracefunc_trampoline
+	arg = c_traceobj
+	
+	# we assume _Py_TracingPossible > 0 here. we cannot really change it anyway
+	# this is basically copied from PyEval_SetTrace in ceval.c
+	temp = tstate.c_traceobj # PPyObject
+	Py_XINCREF(arg)
+	tstate.c_tracefunc = Py_tracefunc()
+	tstate.c_traceobj = PPyObject()
+	# Must make sure that profiling is not ignored if 'temp' is freed
+	tstate.use_tracing = int(bool(tstate.c_profilefunc))
+	Py_XDECREF(temp)
+	tstate.c_tracefunc = func
+	tstate.c_traceobj = arg
+	# Flag that tracing or profiling is turned on
+	tstate.use_tracing = int(bool(func) or bool(tstate.c_profilefunc))
 	pass
+
+def provideTraceFunc():
+	# ensures _Py_TracingPossible > 0
+	# sets tstate.c_tracefunc = call_trampoline
+	# see PyEval_SetTrace in ceval.c
+	# see sys_settrace in sysmodule.c
+	sys.settrace(tracefunc)
+
+	global mainthread
+	frame = sys._current_frames()[mainthread]	
+	tstate = getThreadState(frame)
+	
+	global c_tracefunc_trampoline, c_traceobj
+	c_tracefunc_trampoline = tstate.c_tracefunc
+	c_traceobj = tstate.c_traceobj
+provideTraceFunc()
+
+print "c_tracefunc_trampoline =", c_tracefunc_trampoline
+print "c_traceobj =", c_traceobj
+
+def setGlobalTraceFunc():
+	frames = sys._current_frames()
+	for t in threads:
+		frame = frames[t]
+		frame.f_trace = tracefunc
+		tstate = getThreadState(frame)
+		setTraceOfThread(tstate)
+
+setGlobalTraceFunc()
 
 def main():
 	while True:
 		frames = sys._current_frames()
 		for t in threads:
 			frame = frames[t]
-			print "tick counter of frame", id(frame), ":", getTickCounter(frame)
-			
-			#frame.f_trace = tracefunc
+			print "tick counter of top frame in thread", t, ":", getTickCounter(frame)			
+			print " and trace func:", frame.f_trace
 		time.sleep(1)
 main()

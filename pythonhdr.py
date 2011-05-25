@@ -117,8 +117,8 @@ def make_PyObject(with_trace_refs=False):
                            ('9_ob_prev', ctypes.POINTER(PyObject))]
     else:
         optional_fields = []
-    regular_fields = [('9ob_refcnt', Py_ssize_t),
-                      ('9ob_type', ctypes.POINTER(PyObject))]
+    regular_fields = [('ob_refcnt', Py_ssize_t),
+                      ('ob_type', ctypes.POINTER(PyObject))]
     PyObject._fields_ = optional_fields + regular_fields
 
 make_PyObject()
