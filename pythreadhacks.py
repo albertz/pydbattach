@@ -165,7 +165,7 @@ def setGlobalTraceFunc(tracefunc):
 	c_tracefunc_trampoline = tstate.c_tracefunc
 	c_traceobj = tstate.c_traceobj
 
-	#print getPPyObjectPtr(c_traceobj), id(tracefunc)
+	assert getPPyObjectPtr(c_traceobj) == id(tracefunc)
 
 	mythread = thread.get_ident()
 	frames = sys._current_frames()
