@@ -149,6 +149,7 @@ int startthread() {
 		return 1;
 	}
 	
+	PyThread_init_thread(); // if not yet done
 	PyEval_InitThreads(); /* Start the interpreter's thread-awareness */
 	
 	// XXX this fails ??
