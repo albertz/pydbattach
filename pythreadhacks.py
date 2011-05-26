@@ -115,10 +115,13 @@ def getPPyObjectPtr(pyobj):
 def PPyObject_FromObj(obj):
 	return PPyObject(PyObject.from_address(id(obj)))
 	
-def getThreadState(frame):
+def getThreadStateP(frame):
 	frame = PyFrameObject.from_address(id(frame))
-	tstate = frame.f_tstate.contents
+	tstate = frame.f_tstate
 	return tstate
+
+def getThreadState(frame):
+	return getThreadStateP(frame).contents
 
 def getTickCounter(frame):
 	return getThreadState(frame).tick_counter
@@ -141,6 +144,7 @@ initCTraceFuncTrampoline()
 
 	
 def _setTraceOfThread(tstate, func, arg):
+	tstate = tstate.contents
 	assert type(tstate) is PyThreadState
 	assert type(func) is Py_tracefunc
 	assert type(arg) is PPyObject
@@ -171,12 +175,21 @@ def _setTraceFuncOnFrames(frame, tracefunc):
 def setTraceOfThread(tid, tracefunc):
 	frame = sys._current_frames()[tid]
 	_setTraceFuncOnFrames(frame, tracefunc)
-	tstate = getThreadState(frame)
+	tstateP = getThreadStateP(frame)
+	
+	global _setTraceOfThread
+	if not type(_setTraceOfThread) is ctypes.pythonapi._FuncPtr:
+		try:
+			settrace = ctypes.pythonapi.injected_PyEval_SetTraceEx
+			settrace.argtypes = [POINTER(PyThreadState), Py_tracefunc, PPyObject]
+			_setTraceOfThread = settrace
+			print "successfully linked to injected_PyEval_SetTraceEx"
+		except: pass
 	
 	if tracefunc is None:
-		_setTraceOfThread(tstate, Py_tracefunc(), PPyObject())
+		_setTraceOfThread(tstateP, Py_tracefunc(), PPyObject())
 	else:
-		_setTraceOfThread(tstate, c_tracefunc_trampoline, PPyObject_FromObj(tracefunc))
+		_setTraceOfThread(tstateP, c_tracefunc_trampoline, PPyObject_FromObj(tracefunc))
 		
 def setGlobalTraceFunc(tracefunc):
 	# ensures _Py_TracingPossible > 0
