@@ -145,6 +145,8 @@ def _setTraceOfThread(tstate, func, arg):
 	assert type(func) is Py_tracefunc
 	assert type(arg) is PPyObject
 	
+	tstate.use_tracing = 0 # disable while we are in here. just for safety
+	
 	# we assume _Py_TracingPossible > 0 here. we cannot really change it anyway
 	# this is basically copied from PyEval_SetTrace in ceval.c
 	temp = tstate.c_traceobj # PPyObject
@@ -159,11 +161,16 @@ def _setTraceOfThread(tstate, func, arg):
 	# Flag that tracing or profiling is turned on
 	tstate.use_tracing = int(bool(func) or bool(tstate.c_profilefunc))
 
+def _setTraceFuncOnFrames(frame, tracefunc):
+	while frame is not None:
+		frame.f_trace = tracefunc
+		frame = frame.f_back
+
 # NOTE: This only works if at least one tracefunc is currently installed via sys.settrace().
 # This is because we need _Py_TracingPossible > 0.
 def setTraceOfThread(tid, tracefunc):
 	frame = sys._current_frames()[tid]
-	frame.f_trace = tracefunc
+	_setTraceFuncOnFrames(frame, tracefunc)
 	tstate = getThreadState(frame)
 	
 	if tracefunc is None:
@@ -207,13 +214,16 @@ def pdbIntoRunningThread(tid):
 		return pdb.trace_dispatch
 	
 	sys.settrace(dummytracer) # set some dummy. required by setTraceOfThread
-	setTraceOfThread(tid, inject_tracefunc)
 
-	# Wait until we got into the inject_tracefunc.
-	# This may be important as there is a chance that some of these
-	# objects will get freed before they are used. (Which is probably
-	# some other refcounting bug somewhere.)
-	injectEvent.wait()
+	# go into loop. in some cases, it doesn't seem to work for some reason...
+	while not injectEvent.isSet():
+		setTraceOfThread(tid, inject_tracefunc)
+	
+		# Wait until we got into the inject_tracefunc.
+		# This may be important as there is a chance that some of these
+		# objects will get freed before they are used. (Which is probably
+		# some other refcounting bug somewhere.)
+		injectEvent.wait(1)
 
 def main():
 	def threadfunc(i):
