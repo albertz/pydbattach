@@ -10,24 +10,19 @@ static PyObject *
 builtin_execfile()
 {
     char *filename = "pyinjectcode.py";
-    PyObject *globals = Py_None, *locals = Py_None;
+    PyObject *globals = NULL, *locals = NULL, *builtins = NULL;
     PyObject *res;
     FILE* fp = NULL;
     PyCompilerFlags cf;
     int exists;
 	
-    if (globals == Py_None) {
-        globals = PyEval_GetGlobals();
-        if (locals == Py_None)
-            locals = PyEval_GetLocals();
-    }
-    else if (locals == Py_None)
-        locals = globals;
-    if (PyDict_GetItemString(globals, "__builtins__") == NULL) {
-        if (PyDict_SetItemString(globals, "__builtins__",
-                                 PyEval_GetBuiltins()) != 0)
-            return NULL;
-    }
+	globals = PyDict_New();
+	locals = globals;
+	builtins = PyEval_GetBuiltins();
+	
+    if (PyDict_SetItemString(globals, "__builtins__",
+                                 builtins) != 0)
+		return NULL;
 	
     exists = 0;
     /* Test for existence or directory. */
