@@ -136,12 +136,10 @@ struct bootstate {
 
 static void
 t_bootstrap(void *boot_raw)
-{
+{	
 	struct bootstate *boot = (struct bootstate *) boot_raw;
-	PyThreadState *tstate;
-	PyObject *res;
 	
-	tstate = PyThreadState_New(boot->interp);
+	PyThreadState *tstate = PyThreadState_New(boot->interp);
 	if (tstate == NULL) {
 		PyMem_DEL(boot_raw);
 		PySys_WriteStderr("pyinjectcode: Not enough memory to create thread state.\n");
@@ -149,11 +147,10 @@ t_bootstrap(void *boot_raw)
 		return;
 	}
 	
-	tstate->thread_id = PyThread_get_thread_ident();
 	PyEval_AcquireThread(tstate);
 	
 	PySys_WriteStderr("pyinjectcode: Executing %s.\n", filename);
-	res = builtin_execfile();
+	PyObject* res = builtin_execfile();
 	if (res == NULL) {
 		if (PyErr_ExceptionMatches(PyExc_SystemExit))
 			PyErr_Clear();
@@ -168,8 +165,10 @@ t_bootstrap(void *boot_raw)
 	
 	PySys_WriteStderr("pyinjectcode: Thread finished execution.\n");
 	PyMem_DEL(boot_raw);
+	
 	PyThreadState_Clear(tstate);
 	PyThreadState_DeleteCurrent();
+
 	PyThread_exit_thread();
 }
 
