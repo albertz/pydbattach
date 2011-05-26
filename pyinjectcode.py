@@ -9,8 +9,8 @@ threads = [t for t in sys._current_frames().keys() if t != thread.get_ident()]
 print "pyinjectcode found threads:", threads
 assert threads, "fatal, no threads found"
 
-print "attaching to first thread ..."
-tid = threads[0]
+tid = max(threads) # well, stupid, just made up, but in my case this seems to be the main thread :P
+print "attaching to thread", tid
 
 import pythreadhacks
 pythreadhacks.pdbIntoRunningThread(tid)
