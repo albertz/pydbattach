@@ -1,4 +1,4 @@
-print "Hello World from pyinjectcode"
+print "Hello from pyinjectcode"
 
 import pythreadhacks
 
