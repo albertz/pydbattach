@@ -1,0 +1,9 @@
+http://0xced.blogspot.com/2006/06/machinject-procmod-group-and-security.html
+http://guiheneuf.org/mach%20inject%20for%20intel.html
+http://www.macmark.de/osx_dynamic-overriding.php
+http://svn.red-bean.com/pyobjc/tags/r200-leopard/pyobjc-core/Modules/objc/mach_inject.m
+http://stackoverflow.com/questions/2867121/anyone-get-mach-inject-working-on-snow-leopard
+http://www.core.dk/~lp/2009/08/mac-os-x-code-injection.html
+http://guiheneuf.org/mach%20inject%20for%20intel.html
+http://rgaucher.info/planet/Matasano_Chargen/2008/07/17/What_I%E2%80%99ve_Been_Doing_On_My_Summer_Vacation_or__%E2%80%9CIt_has_to_work__Otherwise_gdb_wouldn%E2%80%99t%E2%80%9D
+
