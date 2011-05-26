@@ -1,2 +1,5 @@
 *.pyc
-
+*.dylib
+*.so
+*.dSYM
+*.o
