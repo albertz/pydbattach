@@ -197,14 +197,22 @@ def pdbIntoRunningThread(tid):
 	pdb = Pdb()
 	pdb.reset()
 	
-	def inject_tracefunc(frame,ev,arg):	
+	import threading
+	injectEvent = threading.Event()
+	
+	def inject_tracefunc(frame,ev,arg):
+		injectEvent.set()
 		pdb.interaction(frame, None)
 		return pdb.trace_dispatch
 	
 	sys.settrace(tracefunc) # set some dummy. required by setTraceOfThread
 	setTraceOfThread(tid, inject_tracefunc)
 
-
+	# Wait until we got into the inject_tracefunc.
+	# This may be important as there is a chance that some of these
+	# objects will get freed before they are used. (Which is probably
+	# some other refcounting bug somewhere.)
+	injectEvent.wait()
 
 def main():
 	def threadfunc(i):
