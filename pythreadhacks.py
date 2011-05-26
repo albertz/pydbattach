@@ -6,15 +6,6 @@ PyObj_FromPtr = _ctypes.PyObj_FromPtr
 
 import thread, time, sys
 
-def threadfunc(i):
-	while True:
-		for i in xrange(1000): pass
-		time.sleep(1)
-
-threads = map(lambda i: thread.start_new_thread(threadfunc, (i,)), range(1))
-while True:
-	if all(t in sys._current_frames() for t in threads): break	
-print "threads:", threads
 
 mainthread = thread.get_ident()
 
@@ -213,11 +204,22 @@ def pdbIntoRunningThread(tid):
 	sys.settrace(tracefunc) # set some dummy. required by setTraceOfThread
 	setTraceOfThread(tid, inject_tracefunc)
 
-pdbThread = threads[0]
-pdbIntoRunningThread(pdbThread)
 
 
 def main():
+	def threadfunc(i):
+		while True:
+			for i in xrange(1000): pass
+			time.sleep(1)
+	
+	threads = map(lambda i: thread.start_new_thread(threadfunc, (i,)), range(1))
+	while True:
+		if all(t in sys._current_frames() for t in threads): break	
+	print "threads:", threads
+
+	pdbThread = threads[0]
+	pdbIntoRunningThread(pdbThread)
+
 	while True:
 		if pdbThread not in sys._current_frames().keys():
 			print "thread exited"
@@ -228,4 +230,6 @@ def main():
 			#print "tick counter of top frame in thread", t, ":", getTickCounter(frame)			
 			#print " and trace func:", frame.f_trace
 		time.sleep(1)
-main()
+
+if __name__ == '__main__':
+	main()
