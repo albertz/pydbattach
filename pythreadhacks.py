@@ -114,6 +114,14 @@ PyThreadState._fields_ = [
 		("thread_id", c_long),
 	]
 
+
+def getPPyObjectPtr(pyobj):
+	if not pyobj: return 0
+	return _ctypes.addressof(pyobj.contents)
+
+def PPyObject_FromObj(obj):
+	return PPyObject(PyObject.from_address(id(obj)))
+	
 def getThreadState(frame):
 	frame = PyFrameObject.from_address(id(frame))
 	tstate = frame.f_tstate.contents
@@ -121,8 +129,26 @@ def getThreadState(frame):
 
 def getTickCounter(frame):
 	return getThreadState(frame).tick_counter
+
+
+c_tracefunc_trampoline = None
+def initCTraceFuncTrampoline():
+	global c_tracefunc_trampoline
 	
-def setTraceOfThread(tstate, func, arg):
+	origtrace = sys.gettrace() # remember orig
+	def dummytracer(*args): return dummytracer
+	sys.settrace(dummytracer)
+	
+	frame = sys._getframe()
+	tstate = getThreadState(frame)
+	
+	c_tracefunc_trampoline = tstate.c_tracefunc
+	
+	sys.settrace(origtrace) # recover
+initCTraceFuncTrampoline()	
+
+	
+def _setTraceOfThread(tstate, func, arg):
 	assert type(tstate) is PyThreadState
 	assert type(func) is Py_tracefunc
 	assert type(arg) is PPyObject
@@ -141,12 +167,17 @@ def setTraceOfThread(tstate, func, arg):
 	# Flag that tracing or profiling is turned on
 	tstate.use_tracing = int(bool(func) or bool(tstate.c_profilefunc))
 
-def getPPyObjectPtr(pyobj):
-	if not pyobj: return 0
-	return _ctypes.addressof(pyobj.contents)
-
-
+# NOTE: This only works if at least one tracefunc is currently installed via sys.settrace().
+def setTraceOfThread(tid, tracefunc):
+	frame = sys._current_frames()[tid]
+	frame.f_trace = tracefunc
+	tstate = getThreadState(frame)
 	
+	if tracefunc is None:
+		_setTraceOfThread(tstate, Py_tracefunc(), PPyObject())
+	else:
+		_setTraceOfThread(tstate, c_tracefunc_trampoline, PPyObject_FromObj(tracefunc))
+		
 def setGlobalTraceFunc(tracefunc):
 	# ensures _Py_TracingPossible > 0
 	# sets tstate.c_tracefunc = call_trampoline
@@ -156,20 +187,20 @@ def setGlobalTraceFunc(tracefunc):
 
 	myframe = sys._getframe()
 	tstate = getThreadState(myframe)
-	
-	c_tracefunc_trampoline = tstate.c_tracefunc
 	c_traceobj = tstate.c_traceobj
-
-	assert getPPyObjectPtr(c_traceobj) == id(tracefunc)
+	assert getPPyObjectPtr(tstate.c_traceobj) == id(tracefunc)
 
 	mythread = thread.get_ident()
 	frames = sys._current_frames()
 	for t,frame in frames.iteritems():
-		frame.f_trace = tracefunc
-		tstate = getThreadState(frame)
-		setTraceOfThread(tstate, c_tracefunc_trampoline, c_traceobj)
+		if t == mythread: continue
+		setTraceOfThread(t, tracefunc)
 
 setGlobalTraceFunc(tracefunc)
+
+from IPython.Debugger import Pdb
+pdb = Pdb()
+#pdb.trace_dispatch
 
 
 def main():
