@@ -7,11 +7,11 @@ This works in several steps:
 
 1. We are attaching to the running Python process and want to inject some C-code `pyinjectcode.c`.
 
- Originally I planned to develop a small tool for this by myself based on `ptrace`. For Mac, I also found `mach_inject` which may have been useful.
+  Originally I planned to develop a small tool for this by myself based on `ptrace`. For Mac, I also found `mach_inject` which may have been useful.
 
- However, to keep things simple for now, I just use GDB for this.
+  However, to keep things simple for now, I just use GDB for this.
 
- See the file `pydbattach.sh` which basically does this step.
+  See the file `pydbattach.sh` which basically does this step.
 
 2. `pyinjectcode.c` creates a new Python thread and runs a Python script. In our case, it runs `pyinjectcode.py`.
 
