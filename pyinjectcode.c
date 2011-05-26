@@ -5,6 +5,7 @@
 
 #include "Python.h"
 #include "pythread.h"
+#include "stringobject.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -26,7 +27,11 @@ builtin_execfile()
     if (PyDict_SetItemString(globals, "__builtins__",
                                  builtins) != 0)
 		return NULL;
-	
+
+	if (PyDict_SetItemString(globals, "__file__",
+							 PyString_FromString(filename)) != 0)
+		return NULL;
+
     exists = 0;
     /* Test for existence or directory. */
 #if defined(PLAN9)
