@@ -7,8 +7,6 @@ PyObj_FromPtr = _ctypes.PyObj_FromPtr
 import thread, time, sys
 
 
-mainthread = thread.get_ident()
-
 def find_thread(frame):
 	for t,f in sys._current_frames().items():
 		while f is not None:
@@ -16,14 +14,18 @@ def find_thread(frame):
 			f = f.f_back
 	return None
 
+
+mainthread = thread.get_ident()
+
 def tracefunc(frame,ev,arg):
 	thread = find_thread(frame)
 	if thread == mainthread: pass
 	else:
-		print "trace", ev, "from thread", thread
+		#print "trace", ev, "from thread", thread
 		pass
 	return tracefunc
 
+def dummytracer(*args): return dummytracer
 
 
 import pythonhdr
@@ -127,8 +129,7 @@ def initCTraceFuncTrampoline():
 	global c_tracefunc_trampoline
 	
 	origtrace = sys.gettrace() # remember orig
-	def dummytracer(*args): return dummytracer
-	sys.settrace(dummytracer)
+	sys.settrace(dummytracer) # it doesn't really matter which tracer, we always get the same trampoline
 	
 	frame = sys._getframe()
 	tstate = getThreadState(frame)
@@ -205,7 +206,7 @@ def pdbIntoRunningThread(tid):
 		pdb.interaction(frame, None)
 		return pdb.trace_dispatch
 	
-	sys.settrace(tracefunc) # set some dummy. required by setTraceOfThread
+	sys.settrace(dummytracer) # set some dummy. required by setTraceOfThread
 	setTraceOfThread(tid, inject_tracefunc)
 
 	# Wait until we got into the inject_tracefunc.
