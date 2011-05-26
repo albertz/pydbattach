@@ -4,35 +4,76 @@
  */
 
 #include "Python.h"
+#include "Python-ast.h"
 #include "pythread.h"
 #include "stringobject.h"
 #include "eval.h"
+#include "pyarena.h"
+#include "code.h"
+#include "compile.h"
 #include <string.h>
 #include <stdio.h>
 
 static char filename[FILENAME_MAX] = "";
 
-static PyObject *
-builtin_execfile()
+// from import.c
+/* Parse a source file and return the corresponding code object */
+
+static PyCodeObject *
+parse_source_module(const char *pathname, FILE *fp)
 {
-	PyObject *globals = NULL, *locals = NULL, *builtins = NULL;
-	PyObject *res;
-	FILE* fp = NULL;
-	PyCompilerFlags cf;
-	int exists;
+    PyCodeObject *co = NULL;
+    mod_ty mod;
+    PyCompilerFlags flags;
+    PyArena *arena = PyArena_New();
+    if (arena == NULL)
+        return NULL;
 	
-	globals = PyDict_New();
-	locals = globals;
-	builtins = PyEval_GetBuiltins();
+    flags.cf_flags = 0;
+	
+    mod = PyParser_ASTFromFile(fp, pathname, Py_file_input, 0, 0, &flags,
+                               NULL, arena);
+    if (mod) {
+        co = PyAST_Compile(mod, pathname, NULL, arena);
+    }
+    PyArena_Free(arena);
+    return co;
+}
+
+
+static PyObject* runPythonFile(FILE* fp, char* pathname) {
+	
+	PyCodeObject *co = parse_source_module(pathname, fp);
+	if (co == NULL)
+		return NULL;
+
+	//PyObject *m = PyImport_ExecCodeModuleEx("<pyinjected module>", (PyObject *)co, pathname);
+    
+	PyObject *globals = PyDict_New();
+	PyObject *locals = globals;
 	
 	if (PyDict_SetItemString(globals, "__builtins__",
-							 builtins) != 0)
+							 PyEval_GetBuiltins()) != 0)
 		return NULL;
 	
 	if (PyDict_SetItemString(globals, "__file__",
-							 PyString_FromString(filename)) != 0)
+							 PyString_FromString(pathname)) != 0)
 		return NULL;
+
+	PyObject* v = PyEval_EvalCode((PyCodeObject *)co, globals, locals);
 	
+	Py_DECREF(co);
+	
+	//return m;
+	return v;
+}
+
+static PyObject *
+builtin_execfile()
+{
+	FILE* fp = NULL;
+	int exists;
+		
 	exists = 0;
 	/* Test for existence or directory. */
 #if defined(PLAN9)
@@ -84,14 +125,8 @@ builtin_execfile()
 		PyErr_SetFromErrnoWithFilename(PyExc_IOError, filename);
 		return NULL;
 	}
-	cf.cf_flags = 0;
-	if (PyEval_MergeCompilerFlags(&cf))
-		res = PyRun_FileExFlags(fp, filename, Py_file_input, globals,
-								locals, 1, &cf);
-	else
-		res = PyRun_FileEx(fp, filename, Py_file_input, globals,
-						   locals, 1);
-	return res;
+	
+	return runPythonFile(fp, filename);
 }
 
 
