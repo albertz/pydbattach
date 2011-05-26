@@ -23,10 +23,12 @@ dylib="$mydir/pyinjectcode.dylib"
 	echo "pyinjectcode.{dylib,so,dll} not found." >&2 && \
 	echo "compile the library first." >&2 && exit 1
 
+pycode="$mydir/pyinjectcode.py"
+
 {
 	echo "set \$m = (void*)dlopen(\"$dylib\", 8)"
 	echo 'set $f = (void*)dlsym($m, "inject")'
-	echo 'call (int)$f()'
+	echo "call (int)\$f(\"$pycode\")"
 	echo 'quit'
 } | gdb $bin $pid
 

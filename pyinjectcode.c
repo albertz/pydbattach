@@ -5,11 +5,14 @@
 
 #include "Python.h"
 #include "pythread.h"
+#include <string.h>
+#include <stdio.h>
+
+static char filename[FILENAME_MAX] = "";
 
 static PyObject *
 builtin_execfile()
 {
-    char *filename = "pyinjectcode.py";
     PyObject *globals = NULL, *locals = NULL, *builtins = NULL;
     PyObject *res;
     FILE* fp = NULL;
@@ -157,7 +160,8 @@ int startthread() {
 }
 
 
-int inject() {
+int inject(char* fn) {
+	strcpy(filename, fn);
 	return startthread();
 }
 
