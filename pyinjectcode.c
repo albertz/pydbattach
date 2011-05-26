@@ -1,3 +1,8 @@
+/*
+ compile:
+ gcc -I /System/Library/Frameworks/Python.framework/Headers -framework Python -dynamiclib pyinjectcode.c -o pyinjectcode.dylib
+ */
+
 #include "Python.h"
 #include "pythread.h"
 
@@ -88,7 +93,6 @@ builtin_execfile()
 
 struct bootstate {
     PyInterpreterState *interp;
-    PyThreadState *tstate;
 };
 
 static void
@@ -98,9 +102,15 @@ t_bootstrap(void *boot_raw)
     PyThreadState *tstate;
     PyObject *res;
 	
-    tstate = boot->tstate;
+	tstate = PyThreadState_New(boot->interp);
+    if (tstate == NULL) {
+        PyMem_DEL(boot_raw);
+		PySys_WriteStderr("pyinjectcode: Not enough memory to create thread state.\n");
+		PyErr_PrintEx(0);
+		return;
+    }
+
     tstate->thread_id = PyThread_get_thread_ident();
-    _PyThreadState_Init(tstate);
     PyEval_AcquireThread(tstate);
 
 	res = builtin_execfile();
@@ -110,10 +120,7 @@ t_bootstrap(void *boot_raw)
         if (PyErr_ExceptionMatches(PyExc_SystemExit))
             PyErr_Clear();
         else {
-            PyObject *file;
-            PySys_WriteStderr(
-							  "Unhandled exception in thread started by injection code");
-            PySys_WriteStderr("\n");
+            PySys_WriteStderr("pyinjectcode: Unhandled exception in thread.\n");
             PyErr_PrintEx(0);
         }
     }
@@ -127,33 +134,30 @@ t_bootstrap(void *boot_raw)
 }
 
 
-char* startthread() {
+int startthread() {
+    struct bootstate *boot;
+    long ident;
+
 	boot = PyMem_NEW(struct bootstate, 1);
-    if (boot == NULL)
-        return "no memory";
-    boot->interp = PyThreadState_GET()->interp;
-    boot->tstate = _PyThreadState_Prealloc(boot->interp);
-    if (boot->tstate == NULL) {
-        PyMem_DEL(boot);
-        return "no memory";
-    }
+    if (boot == NULL) {
+        PySys_WriteStderr("no memory for bootstate\n");
+		PyErr_PrintEx(0);
+		return 1;
+	}
+	boot->interp = PyThreadState_GET()->interp;
     PyEval_InitThreads(); /* Start the interpreter's thread-awareness */
     ident = PyThread_start_new_thread(t_bootstrap, (void*) boot);
     if (ident == -1) {
-        PyThreadState_Clear(boot->tstate);
         PyMem_DEL(boot);
-        return "can't start new thread";
+        PySys_WriteStderr("no memory for thread\n");
+		PyErr_PrintEx(0);
+		return 1;
     }
-	return NULL;
+	return 0;
 }
 
 
-void inject() {
-	char* err = startthread();
-	if(err) {
-		PySys_WriteStderr(err);
-		PySys_WriteStderr("\n");
-		PyErr_PrintEx(0);
-	}
+int inject() {
+	return startthread();
 }
 
