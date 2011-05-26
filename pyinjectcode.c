@@ -1,6 +1,6 @@
 /*
  compile:
- gcc -I /System/Library/Frameworks/Python.framework/Headers -framework Python -dynamiclib pyinjectcode.c -o pyinjectcode.dylib
+ gcc -g -I /System/Library/Frameworks/Python.framework/Headers -framework Python -dynamiclib pyinjectcode.c -o pyinjectcode.dylib
  */
 
 #include "Python.h"
@@ -144,8 +144,13 @@ int startthread() {
 		PyErr_PrintEx(0);
 		return 1;
 	}
-	boot->interp = PyThreadState_GET()->interp;
-    PyEval_InitThreads(); /* Start the interpreter's thread-awareness */
+
+	PyEval_InitThreads(); /* Start the interpreter's thread-awareness */
+
+	// XXX this fails ??
+	//boot->interp = PyThreadState_Get()->interp;
+	boot->interp = PyInterpreterState_Head();
+	
     ident = PyThread_start_new_thread(t_bootstrap, (void*) boot);
     if (ident == -1) {
         PyMem_DEL(boot);
