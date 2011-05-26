@@ -6,6 +6,7 @@
 #include "Python.h"
 #include "pythread.h"
 #include "stringobject.h"
+#include "eval.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -172,5 +173,32 @@ int startthread() {
 int inject(char* fn) {
 	strcpy(filename, fn);
 	return startthread();
+}
+
+
+int
+injected_PyEval_SetTraceEx(PyThreadState* tstate, Py_tracefunc func, PyObject *arg)
+{
+	PyGILState_STATE oldGILState = PyGILState_Ensure(); {
+		
+		// code from original PyEval_SetTrace
+		// also, like in the Python variant, we don't have access to _Py_TracingPossible here
+	
+		PyObject *temp = tstate->c_traceobj;
+		Py_XINCREF(arg);
+		tstate->c_tracefunc = NULL;
+		tstate->c_traceobj = NULL;
+		/* Must make sure that profiling is not ignored if 'temp' is freed */
+		tstate->use_tracing = tstate->c_profilefunc != NULL;
+		Py_XDECREF(temp);
+		tstate->c_tracefunc = func;
+		tstate->c_traceobj = arg;
+		/* Flag that tracing or profiling is turned on */
+		tstate->use_tracing = ((func != NULL)
+							   || (tstate->c_profilefunc != NULL));
+	
+	} PyGILState_Release(oldGILState);
+	
+	return 0;
 }
 
