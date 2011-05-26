@@ -50,7 +50,6 @@ static PyObject* runPythonFile(FILE* fp, char* pathname) {
 	//PyObject *m = PyImport_ExecCodeModuleEx("<pyinjected module>", (PyObject *)co, pathname);
     
 	PyObject *globals = PyDict_New();
-	PyObject *locals = globals;
 	
 	if (PyDict_SetItemString(globals, "__builtins__",
 							 PyEval_GetBuiltins()) != 0)
@@ -60,8 +59,9 @@ static PyObject* runPythonFile(FILE* fp, char* pathname) {
 							 PyString_FromString(pathname)) != 0)
 		return NULL;
 
-	PyObject* v = PyEval_EvalCode((PyCodeObject *)co, globals, locals);
+	PyObject* v = PyEval_EvalCode((PyCodeObject *)co, globals, globals);
 	
+	Py_DECREF(globals);
 	Py_DECREF(co);
 	
 	//return m;
