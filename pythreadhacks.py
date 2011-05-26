@@ -147,7 +147,7 @@ def setTraceOfThread(tstate, func, arg):
 	tstate.use_tracing = int(bool(func) or bool(tstate.c_profilefunc))
 
 
-def setGlobalTraceFunc():
+def setGlobalTraceFunc(tracefunc):
 	# ensures _Py_TracingPossible > 0
 	# sets tstate.c_tracefunc = call_trampoline
 	# see PyEval_SetTrace in ceval.c
@@ -167,7 +167,7 @@ def setGlobalTraceFunc():
 		tstate = getThreadState(frame)
 		setTraceOfThread(tstate, c_tracefunc_trampoline, c_traceobj)
 
-setGlobalTraceFunc()
+setGlobalTraceFunc(tracefunc)
 
 
 def main():
