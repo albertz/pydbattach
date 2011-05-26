@@ -4,11 +4,6 @@ import _ctypes
 pyapi = ctypes.pythonapi
 PyObj_FromPtr = _ctypes.PyObj_FromPtr
 
-#f = pyapi._PyThread_CurrentFrames()
-#f = PyObj_FromPtr(f)
-
-#print f
-
 import thread, time, sys
 
 def threadfunc(i):
