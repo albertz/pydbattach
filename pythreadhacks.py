@@ -168,6 +168,7 @@ def _setTraceOfThread(tstate, func, arg):
 	tstate.use_tracing = int(bool(func) or bool(tstate.c_profilefunc))
 
 # NOTE: This only works if at least one tracefunc is currently installed via sys.settrace().
+# This is because we need _Py_TracingPossible > 0.
 def setTraceOfThread(tid, tracefunc):
 	frame = sys._current_frames()[tid]
 	frame.f_trace = tracefunc
@@ -196,19 +197,35 @@ def setGlobalTraceFunc(tracefunc):
 		if t == mythread: continue
 		setTraceOfThread(t, tracefunc)
 
-setGlobalTraceFunc(tracefunc)
+#setGlobalTraceFunc(tracefunc)
 
-from IPython.Debugger import Pdb
-pdb = Pdb()
-#pdb.trace_dispatch
+def pdbIntoRunningThread(tid):
+	from pdb import Pdb
+	#from IPython.Debugger import Pdb
+	
+	pdb = Pdb()
+	pdb.reset()
+	
+	def inject_tracefunc(frame,ev,arg):	
+		pdb.interaction(frame, None)
+		return pdb.trace_dispatch
+	
+	sys.settrace(tracefunc) # set some dummy. required by setTraceOfThread
+	setTraceOfThread(tid, inject_tracefunc)
+
+pdbThread = threads[0]
+pdbIntoRunningThread(pdbThread)
 
 
 def main():
 	while True:
-		frames = sys._current_frames()
-		for t in threads:
-			frame = frames[t]
-			print "tick counter of top frame in thread", t, ":", getTickCounter(frame)			
-			print " and trace func:", frame.f_trace
+		if pdbThread not in sys._current_frames().keys():
+			print "thread exited"
+			break
+		#frames = sys._current_frames()
+		#for t in threads:
+		#	frame = frames[t]
+			#print "tick counter of top frame in thread", t, ":", getTickCounter(frame)			
+			#print " and trace func:", frame.f_trace
 		time.sleep(1)
 main()
