@@ -116,9 +116,8 @@ t_bootstrap(void *boot_raw)
 	tstate->thread_id = PyThread_get_thread_ident();
 	PyEval_AcquireThread(tstate);
 	
+	PySys_WriteStderr(stdout, "pyinjectcode: Executing %s.\n", filename);
 	res = builtin_execfile();
-	//res = PyEval_CallObjectWithKeywords(
-	//									boot->func, boot->args, boot->keyw);
 	if (res == NULL) {
 		if (PyErr_ExceptionMatches(PyExc_SystemExit))
 			PyErr_Clear();
@@ -131,6 +130,7 @@ t_bootstrap(void *boot_raw)
 	else
 		Py_DECREF(res);
 	
+	PySys_WriteStderr(stdout, "pyinjectcode: Thread finished execution.\n");
 	PyMem_DEL(boot_raw);
 	PyThreadState_Clear(tstate);
 	PyThreadState_DeleteCurrent();
