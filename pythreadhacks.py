@@ -35,6 +35,7 @@ def tracefunc(frame,ev,arg):
 	if thread == mainthread: pass
 	else:
 		print "trace", ev, "from thread", thread
+		pass
 	return tracefunc
 
 
@@ -125,7 +126,6 @@ def getThreadState(frame):
 
 def getTickCounter(frame):
 	return getThreadState(frame).tick_counter
-
 	
 def setTraceOfThread(tstate, func, arg):
 	assert type(tstate) is PyThreadState
@@ -146,7 +146,12 @@ def setTraceOfThread(tstate, func, arg):
 	# Flag that tracing or profiling is turned on
 	tstate.use_tracing = int(bool(func) or bool(tstate.c_profilefunc))
 
+def getPPyObjectPtr(pyobj):
+	if not pyobj: return 0
+	return _ctypes.addressof(pyobj.contents)
 
+
+	
 def setGlobalTraceFunc(tracefunc):
 	# ensures _Py_TracingPossible > 0
 	# sets tstate.c_tracefunc = call_trampoline
@@ -159,6 +164,8 @@ def setGlobalTraceFunc(tracefunc):
 	
 	c_tracefunc_trampoline = tstate.c_tracefunc
 	c_traceobj = tstate.c_traceobj
+
+	#print getPPyObjectPtr(c_traceobj), id(tracefunc)
 
 	mythread = thread.get_ident()
 	frames = sys._current_frames()
