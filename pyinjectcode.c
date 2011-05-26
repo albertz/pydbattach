@@ -151,12 +151,14 @@ int startthread() {
 	
 	PyThread_init_thread(); // if not yet done
 	PyEval_InitThreads(); /* Start the interpreter's thread-awareness */
+
+	PyGILState_STATE oldGILState = PyGILState_Ensure(); {
 	
-	// XXX this fails ??
-	//boot->interp = PyThreadState_Get()->interp;
-	boot->interp = PyInterpreterState_Head();
+		boot->interp = PyThreadState_Get()->interp;	
+		ident = PyThread_start_new_thread(t_bootstrap, (void*) boot);
 	
-	ident = PyThread_start_new_thread(t_bootstrap, (void*) boot);
+	} PyGILState_Release(oldGILState);
+	
 	if (ident == -1) {
 		PyMem_DEL(boot);
 		PySys_WriteStderr("no memory for thread\n");
