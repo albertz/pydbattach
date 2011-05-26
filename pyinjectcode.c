@@ -125,6 +125,7 @@ t_bootstrap(void *boot_raw)
 		else {
 			PySys_WriteStderr("pyinjectcode: Unhandled exception in thread.\n");
 			PyErr_PrintEx(0);
+			PyErr_Clear(); // clear state, we don't want to crash the other process
 		}
 	}
 	else
