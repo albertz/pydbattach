@@ -127,9 +127,10 @@ def getTickCounter(frame):
 	return getThreadState(frame).tick_counter
 
 	
-def setTraceOfThread(tstate):
-	func = c_tracefunc_trampoline
-	arg = c_traceobj
+def setTraceOfThread(tstate, func, arg):
+	assert type(tstate) is PyThreadState
+	assert type(func) is Py_tracefunc
+	assert type(arg) is PPyObject
 	
 	# we assume _Py_TracingPossible > 0 here. we cannot really change it anyway
 	# this is basically copied from PyEval_SetTrace in ceval.c
@@ -144,36 +145,30 @@ def setTraceOfThread(tstate):
 	tstate.c_traceobj = arg
 	# Flag that tracing or profiling is turned on
 	tstate.use_tracing = int(bool(func) or bool(tstate.c_profilefunc))
-	pass
 
-def provideTraceFunc():
+
+def setGlobalTraceFunc():
 	# ensures _Py_TracingPossible > 0
 	# sets tstate.c_tracefunc = call_trampoline
 	# see PyEval_SetTrace in ceval.c
 	# see sys_settrace in sysmodule.c
 	sys.settrace(tracefunc)
 
-	global mainthread
-	frame = sys._current_frames()[mainthread]	
-	tstate = getThreadState(frame)
+	myframe = sys._getframe()
+	tstate = getThreadState(myframe)
 	
-	global c_tracefunc_trampoline, c_traceobj
 	c_tracefunc_trampoline = tstate.c_tracefunc
 	c_traceobj = tstate.c_traceobj
-provideTraceFunc()
 
-print "c_tracefunc_trampoline =", c_tracefunc_trampoline
-print "c_traceobj =", c_traceobj
-
-def setGlobalTraceFunc():
+	mythread = thread.get_ident()
 	frames = sys._current_frames()
-	for t in threads:
-		frame = frames[t]
+	for t,frame in frames.iteritems():
 		frame.f_trace = tracefunc
 		tstate = getThreadState(frame)
-		setTraceOfThread(tstate)
+		setTraceOfThread(tstate, c_tracefunc_trampoline, c_traceobj)
 
 setGlobalTraceFunc()
+
 
 def main():
 	while True:
