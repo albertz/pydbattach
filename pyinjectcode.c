@@ -1,12 +1,21 @@
 /*
  compile:
- gcc -g -I /System/Library/Frameworks/Python.framework/Headers -framework Python -dynamiclib pyinjectcode.c -o pyinjectcode.dylib
+
+ Mac, System Python:
+    gcc -g -I /System/Library/Frameworks/Python.framework/Headers -framework Python -dynamiclib pyinjectcode.c -o pyinjectcode.dylib
+ Mac, Python3.2 via Homebrew
+    gcc -g -I /usr/local/include/python3.2m/ -L /usr/local/lib/ -lpython3.2m -dynamiclib pyinjectcode.c -o pyinjectcode.dylib
  */
 
 #include "Python.h"
 #include "Python-ast.h"
 #include "pythread.h"
+#if PY_MAJOR_VERSION <= 2
 #include "stringobject.h"
+#else
+#include "unicodeobject.h"
+#define PyString_FromString PyUnicode_FromString
+#endif
 #include "eval.h"
 #include "pyarena.h"
 #include "code.h"
@@ -31,8 +40,13 @@ parse_source_module(const char *pathname, FILE *fp)
 	
     flags.cf_flags = 0;
 	
-    mod = PyParser_ASTFromFile(fp, pathname, Py_file_input, 0, 0, &flags,
-                               NULL, arena);
+    mod = PyParser_ASTFromFile(
+		fp, pathname,
+#if PY_MAJOR_VERSION >= 3
+		"utf-8",
+#endif
+		Py_file_input, 0, 0, &flags,
+		NULL, arena);
     if (mod) {
         co = PyAST_Compile(mod, pathname, NULL, arena);
     }
