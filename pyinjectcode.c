@@ -73,7 +73,7 @@ static PyObject* runPythonFile(FILE* fp, char* pathname) {
 							 PyString_FromString(pathname)) != 0)
 		return NULL;
 
-	PyObject* v = PyEval_EvalCode((PyCodeObject *)co, globals, globals);
+	PyObject* v = PyEval_EvalCode((PyObject *)co, globals, globals);
 	
 	Py_DECREF(globals);
 	Py_DECREF(co);
