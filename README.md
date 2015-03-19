@@ -19,4 +19,11 @@ This works in several steps:
 
 4. `pythreadhacks.py` heavily uses `(_)ctypes` to access the underlying CPython objects for the thread state. This way, it reimplements `PyEval_SetTrace` in a more general way.
 
+---
+
+Alternatives:
+
+* [pyringe](https://github.com/google/pyringe)
+* [See this StackOverflow thread.](http://stackoverflow.com/questions/29148319/provide-remote-shell-for-python-script)
+
 -- Albert Zeyer, <http://www.az2000.de>
