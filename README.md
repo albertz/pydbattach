@@ -39,10 +39,14 @@ There are other alternatives where you prepare your Python script beforehand to 
 [lothar.com example](http://www.lothar.com/tech/twisted/manhole.xhtml),
 [lysator.liu.se example](http://www.lysator.liu.se/xenofarm/python/tmp-server/Twisted/doc/howto/manhole.html),
 [related StackOverflow question](http://stackoverflow.com/questions/24296807/python-twisted-manhole-that-works-like-ipython-or-similar),
-[blog.futurefoundries.com, 2013](http://blog.futurefoundries.com/2013/04/ssh-into-your-python-server.html)
+[blog.futurefoundries.com (2013)](http://blog.futurefoundries.com/2013/04/ssh-into-your-python-server.html)
 * very simple [manhole](https://pypi.python.org/pypi/manhole), has also some overview over related projects
 * [ispyd](https://github.com/GrahamDumpleton/ispyd)
 * [Eric IDE](http://eric-ide.python-projects.org/)
+* [Trepan (based on pydb)](https://github.com/rocky/python2-trepan)
+* [rpdb](https://pypi.python.org/pypi/rpdb/)
+* [rconsole](http://winpdb.org/2010/09/rconsole-remote-python-console/)
+(part of [rfoo](http://code.google.com/p/rfoo/))
 
 Some overviews and collected code examples:
 
