@@ -23,20 +23,32 @@ This works in several steps:
 
 Similar alternatives, to attach to running CPython process without having it prepared beforehand. Those usually use the OS debugging capabilities (or use gdb/lldb) to attach to the native CPython process and then inject some code or just analyze the native CPython thread stacks.
 
-* [pyringe](https://github.com/google/pyringe) 
+* [pyringe](https://github.com/google/pyringe)
+* [pyrasite](https://github.com/lmacken/pyrasite)
+* [pystuck](https://github.com/alonho/pystuck)
+* [pdb-clone](https://code.google.com/p/pdb-clone/wiki/RemoteDebugging)
 
-There are other alternatives where you prepare your Python script beforehand to listen on some (tcp/ipc) socket to provide an interface for remote debugging and/or just a Python shell / REPL.
+There are other alternatives where you prepare your Python script beforehand to listen on some (tcp/file) socket to provide an interface for remote debugging and/or just a Python shell / REPL.
 
 * [winpdb](http://winpdb.org/) (cross platform) remote debugger
-* [PyCharm](https://www.jetbrains.com/pycharm/) remote debugger
-* [PyDev](http://pydev.org/) remote debugger
+* [PyCharm IDE](https://www.jetbrains.com/pycharm/) remote debugger,
+[doc](https://www.jetbrains.com/pycharm/help/remote-debugging.html)
+* [PyDev IDE](http://pydev.org/) remote debugger
 * [Twisted Conch Manhole](https://twistedmatrix.com),
 [official example](http://twistedmatrix.com/documents/current/_downloads/demo_manhole.tac),
 [lothar.com example](http://www.lothar.com/tech/twisted/manhole.xhtml),
 [lysator.liu.se example](http://www.lysator.liu.se/xenofarm/python/tmp-server/Twisted/doc/howto/manhole.html),
 [related StackOverflow question](http://stackoverflow.com/questions/24296807/python-twisted-manhole-that-works-like-ipython-or-similar),
 [blog.futurefoundries.com, 2013](http://blog.futurefoundries.com/2013/04/ssh-into-your-python-server.html)
+* very simple [manhole](https://pypi.python.org/pypi/manhole), has also some overview over related projects
+* [ispyd](https://github.com/GrahamDumpleton/ispyd)
+* [Eric IDE](http://eric-ide.python-projects.org/)
 
-[Also see this StackOverflow thread about Python remote shells.](http://stackoverflow.com/questions/29148319/provide-remote-shell-for-python-script)
+Some overviews and collected code examples:
+
+* [(QGIS) Example code for PyDev, Winpdb, Eric](https://github.com/sourcepole/qgis-remote-debug)
+* [Python Wiki: Python debugging tools](https://wiki.python.org/moin/PythonDebuggingTools),
+[Python Wiki: Python debuggers](https://wiki.python.org/moin/PythonDebuggers)
+* [StackOverflow question about Python remote shells.](http://stackoverflow.com/questions/29148319/provide-remote-shell-for-python-script)
 
 -- Albert Zeyer, <http://www.az2000.de>
