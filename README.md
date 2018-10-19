@@ -27,6 +27,8 @@ Similar alternatives, to attach to running CPython process without having it pre
 * [pyrasite](https://github.com/lmacken/pyrasite)
 * [pystuck](https://github.com/alonho/pystuck)
 * [pdb-clone](https://code.google.com/p/pdb-clone/wiki/RemoteDebugging)
+* [py-spy](https://github.com/benfred/py-spy/)
+* [Pyflame](https://github.com/uber/pyflame)
 
 There are other alternatives where you prepare your Python script beforehand to listen on some (tcp/file) socket to provide an interface for remote debugging and/or just a Python shell / REPL.
 
