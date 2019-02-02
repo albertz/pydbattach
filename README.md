@@ -32,9 +32,8 @@ Similar alternatives, to attach to running CPython process without having it pre
 
 There are other alternatives where you prepare your Python script beforehand to listen on some (tcp/file) socket to provide an interface for remote debugging and/or just a Python shell / REPL.
 
-* [IPython](http://ipython.org/), by embedding an IPython kernel,
-see [here](http://ipython.readthedocs.org/en/latest/interactive/reference.html#embedding),
-[example remote shell code](https://github.com/albertz/pydbattach/blob/master/alternatives/ipython_remote_shell.py)
+* [IPython](http://ipython.org/), by embedding an IPython kernel:
+[background_zmq_ipython package](https://github.com/albertz/background-zmq-ipython)
 * [winpdb](http://winpdb.org/) (cross platform) remote debugger
 * [PyCharm IDE](https://www.jetbrains.com/pycharm/) remote debugger,
 [doc](https://www.jetbrains.com/pycharm/help/remote-debugging.html)
