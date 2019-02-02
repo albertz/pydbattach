@@ -2,6 +2,10 @@
 import sys
 import os
 
+# Note: This is outdated now.
+# See here for a more recent version:
+# https://github.com/albertz/background-zmq-ipython
+
 def initIPythonKernel():
   # You can remotely connect to this kernel. See the output on stdout.
   # See:
