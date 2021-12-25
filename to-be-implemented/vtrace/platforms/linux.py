@@ -92,7 +92,7 @@ class LinuxMixin:
 
     def setupMemFile(self, offset):
         """
-        A utility to open (if necissary) and seek the memfile
+        A utility to open (if necessary) and seek the memfile
         """
         if self.memfd == None:
             self.memfd = libc.open("/proc/%d/mem" % self.pid, O_RDWR | O_LARGEFILE, 0755)

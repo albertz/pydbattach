@@ -143,9 +143,9 @@ class VStruct(object):
     The base vstruct object.  This object may be extended *mostly*
     by setting the class-local value _fields_.  Once fields are setup
     you may use a vstruct derived class to parse out byte sequences
-    into programatically accessable fields which dereferenceable
+    into programatically accessible fields which dereferenceable
     from the instantiated structure object.  Support will probably
-    be eventually implemented for writting to those same values
+    be eventually implemented for writing to those same values
     and zipping it back up into a byte sequence.
     """
     _fields_ = ()

@@ -5,7 +5,7 @@ Vtrace is a *mostly* native python debugging framework which
 can be used to quickly write programatic debuggers and research
 tools.
 
-I'm not known for writting great docs...  but the code should
+I'm not known for writing great docs...  but the code should
 be pretty straight forward...
 
 This has been in use for over 2 years privately, but is nowhere
@@ -156,7 +156,7 @@ class Trace(Notifier):
 
 		self.initMode("RunForever", False, "Run until RunForever = False")
 		self.initMode("NonBlocking", False, "A call to wait() fires a thread to wait *for* you")
-		self.initMode("ThreadProxy", True, "Proxy necissary requests through a single thread (can deadlock...)")
+		self.initMode("ThreadProxy", True, "Proxy necessary requests through a single thread (can deadlock...)")
 		self.initMode("FastBreak", False, "Do *NOT* add/remove breakpoints per-run, but leave them there once active")
 		self.initMode("SingleStep", False, "All calls to run() actually just step.  This allows RunForever + SingleStep to step forever ;)")
 		self.initMode("FastStep", False, "All stepi() will NOT generate a step event")
@@ -300,7 +300,7 @@ class Trace(Notifier):
 		"normalized" library names.  This method returns
 		the list of normalized names for the loaded libraries.
 
-		(probably only useful for writting symbol browsers...)
+		(probably only useful for writing symbol browsers...)
 		"""
 		return self.resbynorm.keys()
 
@@ -497,7 +497,7 @@ class Trace(Notifier):
 
 	def hasMeta(self, name):
 		"""
-		Check to see if a metadata key exists... Mostly un-necissary
+		Check to see if a metadata key exists... Mostly un-necessary
 		as getMeta() with a default will set the key to the default
 		if non-existant.
 		"""
@@ -661,7 +661,7 @@ class Trace(Notifier):
 		"""
 		Because breakpoints are potentially on the remote debugger
 		and code is not pickleable in python, special access methods
-		which takes strings of python code are necissary for the
+		which takes strings of python code are necessary for the
 		vdb interface to quick script breakpoint code.  Use this method
 		to set the python code for this breakpoint.
 		"""
@@ -1250,7 +1250,7 @@ class VtraceExpression:
 		Mapped in by name
 
 	* Symbol Resolvers 
-		They are accessable by the "normalized libname" so, kernel32.dll is "kernel32"
+		They are accessible by the "normalized libname" so, kernel32.dll is "kernel32"
 		and /usr/lib/libpthread-2.0.40.so is "libpthread".  These resolvers may be
 		dereferenced to get symbols by name.  For example the expression "kernel32.CloseHandle"
 		will return the address of the CloseHandle symbol from kernel32

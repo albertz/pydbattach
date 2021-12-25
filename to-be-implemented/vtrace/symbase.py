@@ -59,8 +59,8 @@ class VSymbolResolver:
     def __init__(self, filename, loadbase=0, casesens=True):
         """
         The constructor for SymbolResolver and it's inheritors
-        is responsible for either parsing or settting up the
-        necissary context to parse when requested.
+        is responsible for either parsing or setting up the
+        necessary context to parse when requested.
         """
         self.loaded = False
         self.loadbase = loadbase

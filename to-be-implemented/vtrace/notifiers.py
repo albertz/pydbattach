@@ -3,7 +3,7 @@ Vtrace notitifers base classes and examples
 
 Vtrace supports the idea of callback notifiers which
 get called whenever particular events occur in the target
-process.  Notifiers may be registered to recieve a callback
+process.  Notifiers may be registered to receive a callback
 on any of the vtrace.NOTIFY_FOO events from vtrace.  One notifier
 *may* be registered with more than one trace, as the "notify"
 method is passed a reference to the trace for which an event
@@ -25,7 +25,7 @@ class Notifier(object):
     def __init__(self):
         """
         All extenders *must* call this.  Mostly because all the
-        goop necissary for the remote debugging stuff...
+        goop necessary for the remote debugging stuff...
         (if notifier is instantiated on server, all is well, if it's
         on the client it needs a proxy...)
         """

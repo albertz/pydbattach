@@ -825,7 +825,7 @@ class Elf32Section:
 
     def getPadSize(self, offset):
         """
-        Calculate the pad necissary for this section
+        Calculate the pad necessary for this section
         based on the file offset given as an arg
         """
         ret = 0

@@ -105,7 +105,7 @@ def getLocalInfo():
 
 def setCallerInfo(callerinfo):
     """
-    This is necissary because of crazy python method call
+    This is necessary because of crazy python method call
     name munging for thread attributes ;)
     """
     currentThread().__cobra_caller_info = callerinfo
@@ -224,7 +224,7 @@ class CobraSocket:
 
     def sendMessage(self, mtype, objname, data):
         """
-        Send message is responsable for transmission of cobra messages,
+        Send message is responsible for transmission of cobra messages,
         and socket reconnection in the event that the send fails for network
         reasons.
         """
@@ -253,7 +253,7 @@ class CobraSocket:
     def recvMessage(self):
         """
         Returns tuple of mtype, objname, and data
-        This method is *NOT* responsable for re-connection, because there
+        This method is *NOT* responsible for re-connection, because there
         is not context on the server side for what to send on re-connect.
         Client side uses of the CobraSocket object should use cobraTransaction
         to ensure re-tranmission of the request on reception errors.

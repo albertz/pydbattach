@@ -72,7 +72,7 @@ class TEB(VStruct):
         #FIXME not done!
     ]
 
-# Some necissary arrays for the PEB
+# Some necessary arrays for the PEB
 class TlsExpansionBitsArray(VArray):
     _field_type_ = v_uint32
     _field_count_ = 32

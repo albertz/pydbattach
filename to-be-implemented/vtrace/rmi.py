@@ -61,7 +61,7 @@ def getCallbackProxy(trace, notifier):
 
 def getCallbackPort():
     """
-    If necissary, start a callback daemon.  Return the
+    If necessary, start a callback daemon.  Return the
     ephemeral port it was bound on.
     """
     global callback_daemon

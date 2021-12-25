@@ -566,14 +566,14 @@ class UtilMixin:
         """
         Initialize a mode, this should ONLY be called
         during setup routines for the trace!  It determines
-        the available mode setings.
+        the available mode settings.
         """
         self.modes[name] = bool(value)
         self.modedocs[name] = descr
 
     def release(self):
         """
-        Do cleanup when we're done.  This is mostly necissary
+        Do cleanup when we're done.  This is mostly necessary
         because of the thread proxy holding a reference to this
         tracer...  We need to let him die off and try to get
         garbage collected.
@@ -759,7 +759,7 @@ class UtilMixin:
         """
         This should be used *at load time* to setup the library
         event metadata.  This will also instantiate a VSymbolResolver
-        for this platform and setup the internal structures as necissary
+        for this platform and setup the internal structures as necessary
 
         This returns True/False for whether or not the library is
         going to be parsed (False on duplicate or non-file).
