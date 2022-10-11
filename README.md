@@ -23,12 +23,10 @@ This works in several steps:
 
 Similar alternatives, to attach to running CPython process without having it prepared beforehand. Those usually use the OS debugging capabilities (or use gdb/lldb) to attach to the native CPython process and then inject some code or just analyze the native CPython thread stacks.
 
-* [pyringe](https://github.com/google/pyringe)
-* [pyrasite](https://github.com/lmacken/pyrasite)
-* [pystuck](https://github.com/alonho/pystuck)
-* [pdb-clone](https://code.google.com/p/pdb-clone/wiki/RemoteDebugging)
-* [py-spy](https://github.com/benfred/py-spy/)
-* [Pyflame](https://github.com/uber/pyflame)
+* [Google pyringe](https://github.com/google/pyringe), last update 2014
+* [pyrasite](https://github.com/lmacken/pyrasite), last update 2017
+* [py-spy](https://github.com/benfred/py-spy/), sampling only
+* [Pyflame](https://github.com/uber/pyflame), sampling only
 
 There are other alternatives where you prepare your Python script beforehand to listen on some (tcp/file) socket to provide an interface for remote debugging and/or just a Python shell / REPL.
 
@@ -51,6 +49,8 @@ There are other alternatives where you prepare your Python script beforehand to 
 * [rpdb](https://pypi.python.org/pypi/rpdb/)
 * [rconsole](http://winpdb.org/2010/09/rconsole-remote-python-console/)
 (part of [rfoo](http://code.google.com/p/rfoo/))
+* [pystuck](https://github.com/alonho/pystuck)
+* [pdb-clone](https://github.com/corpusops/pdbclone)
 
 Some overviews and collected code examples:
 
