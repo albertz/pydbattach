@@ -25,8 +25,9 @@ Similar alternatives, to attach to running CPython process without having it pre
 
 * [Google pyringe](https://github.com/google/pyringe), last update 2014
 * [pyrasite](https://github.com/lmacken/pyrasite), last update 2017
-* [py-spy](https://github.com/benfred/py-spy/), sampling only
+* [py-spy](https://github.com/benfred/py-spy/), sampling only, dump stack traces
 * [Pyflame](https://github.com/uber/pyflame), sampling only
+* [PyStack](https://bloomberg.github.io/pystack/), dump stack traces including locals
 
 There are other alternatives where you prepare your Python script beforehand to listen on some (tcp/file) socket to provide an interface for remote debugging and/or just a Python shell / REPL.
 
